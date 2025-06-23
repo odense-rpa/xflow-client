@@ -1,7 +1,7 @@
 import httpx
 import logging
 import json
-from authlib.integrations.httpx_client import OAuth2Client
+
 from urllib.parse import urljoin
 
 def _format_json(data: dict) -> str:
@@ -10,8 +10,6 @@ def _format_json(data: dict) -> str:
     :return: A formatted string representation of the JSON data.
     """
     return json.dumps(data, indent=2)
-instance = "odense-test"
-token = "abc"
 
 class XFlowClient:
     api: dict
@@ -25,11 +23,8 @@ class XFlowClient:
         if not instance:
             raise ValueError("Instance URL must be provided.")
         
-        self.token = {
-            "headers": {
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json"
-            }       
+        self.headers = {
+            "publicApiToken": f"{token}"            
         }
         self.base_url = f"https://api.{instance}.xflow.dk/"
 
@@ -40,9 +35,9 @@ class XFlowClient:
         logging.getLogger("httpcore").setLevel(logging.WARNING)
 
         # Set up OAuth2 client
-        self.client = OAuth2Client(
-            token=self.token,
-            base_url=self.base_url
+        self.client = httpx.Client(
+            base_url=self.base_url, 
+            headers=self.headers
         )
 
     def _normalize_url(self, endpoint: str) -> str:
@@ -56,9 +51,40 @@ class XFlowClient:
         response = self.client.get(url, **kwags)
         self._handle_errors(response) # findes ikke atm
         return response
+    
+    def post(self, endpoint: str, json: dict, **kwargs) -> httpx.Response:
+        url = self._normalize_url(endpoint)
 
+        # Check if the endpoint is in the non-logging list
+        if len([endpoint for endpoint in self._non_logging_endpoints if url.endswith(endpoint)]) == 0:
+            self.logger.info(f"POST: {url} data: {_format_json(json)}")
+
+        response = self.client.post(url, json=json, **kwargs)
+        self._handle_errors(response)
+        return response
+
+    def put(self, endpoint: str, json: dict, **kwargs) -> httpx.Response:
+        url = self._normalize_url(endpoint)
+
+        if len([endpoint for endpoint in self._non_logging_endpoints if url.endswith(endpoint)]) == 0:
+            self.logger.info(f"PUT: {url} data: {_format_json(json)}")
+
+        response = self.client.put(url, json=json, **kwargs)
+        self._handle_errors(response)
+        return response
+
+    def delete(self, endpoint: str, **kwargs) -> httpx.Response:
+        url = self._normalize_url(endpoint)
+        
+        if len([endpoint for endpoint in self._non_logging_endpoints if url.endswith(endpoint)]) == 0:
+            self.logger.info(f"DELETE: {url}")
+        
+        response = self.client.delete(url, **kwargs)
+        self._handle_errors(response)
+        return response
 
     def _handle_errors(self, response: httpx.Response):
         if response.is_error:
             self.logger.error(f"Error {response.status_code}: {response.text}")
-        response.raise_for_status() 
+        response.raise_for_status()
+        
