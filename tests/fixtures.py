@@ -27,5 +27,6 @@ def process_client(base_client): # noqa
 def process_template_client(base_client): # noqa
     return ProcessTemplateClient(base_client)
 
+@pytest.fixture
 def value_list_client(base_client): # noqa
     return ValueListClient(base_client)
