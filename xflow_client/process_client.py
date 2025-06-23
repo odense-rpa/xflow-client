@@ -9,12 +9,3 @@ class ProcessClient:
         """
         self.client = client
         
-    def get_process_templates(self):
-        try:
-            response = self.client.get("/ProcessTemplate/All")
-            return response.json()
-
-        except HTTPStatusError as e:
-            if e.response.status_code == 404:
-                return None
-            raise
