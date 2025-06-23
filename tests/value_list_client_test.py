@@ -33,8 +33,13 @@ def test_update_value_list(value_list_client):
     updated_payload = {"valueListData": updated_value_list_data}
     value_list_client.update_value_list("37493516-8612-44e9-9767-9250351eb658", updated_payload)
 
-    refreshed_items = value_list_client.get_value_items_from_value_list("37493516-8612-44e9-9767-9250351eb658")
-    refreshed_items = refreshed_items["valueListData"]
-    match = next((item for item in refreshed_items["valueListData"] if item["value"] == "test_værdi"), None)
+    refreshed = value_list_client.get_value_items_from_value_list("37493516-8612-44e9-9767-9250351eb658")
+    refreshed_items = refreshed["valueListData"]
+    match = next((item for item in refreshed_items if item["value"] == "test_værdi"), None)
     assert match is not None
+
+    # Oprydning: fjern testitem igen
+    cleaned_list = [item for item in refreshed_items if item["key"] != "5"]
+    cleanup_payload = {"valueListData": cleaned_list}
+    value_list_client.update_value_list("37493516-8612-44e9-9767-9250351eb658", cleanup_payload)
     
