@@ -1,0 +1,18 @@
+[project]
+name = "xflow-client"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jakob Kirkegaard Wibroe", email = "jkwibroe91@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "authlib>=1.6.0",
+    "httpx>=0.28.1",
+    "python-dotenv>=1.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
