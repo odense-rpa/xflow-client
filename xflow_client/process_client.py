@@ -47,13 +47,28 @@ class ProcessClient:
         :return: A list of processes matching the query.
         """
         try:
-            response = self.client.post(f"/Process/Search", json=query)
+            response = self.client.post("/Process/Search", json=query)
             return response.json()
 
         except HTTPStatusError as e:
             if e.response.status_code == 404:
                 return []
             raise
+
+    def search_processes_by_current_activity(self, activity_id: int):
+        """Search for processes by the current activity ID.
+        
+        :param activity_id: The ID of the current activity to search for.
+        :return: A list of processes that are currently at the specified activity.
+        """
+        try:
+            pass
+            # TODO: Implement the actual endpoint for searching by current activity
+
+        except HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return []
+            raise    
 
     def advance_process(self, process_id: str):
         """Advance a process to the next step.
@@ -62,8 +77,8 @@ class ProcessClient:
         :return: The updated process data as a JSON object or None if not found.
         """
         try:
-            response = self.client.post(f"/Process/{process_id}/Advance")
-            return response.json()
+            response = self.client.post(f"/Process/{process_id}/Advance", json={})
+            return response
 
         except HTTPStatusError as e:
             if e.response.status_code == 404:
@@ -77,8 +92,8 @@ class ProcessClient:
         :return: The updated process data as a JSON object or None if not found.
         """
         try:
-            response = self.client.post(f"/Process/{process_id}/Reject", json={"ActivityId": activity_id, "Note": note})
-            return response.json()
+            response = self.client.post(f"/Process/{process_id}/Reject", json={"rejectedToActivityId": activity_id, "note": note})
+            return response
 
         except HTTPStatusError as e:
             if e.response.status_code == 404:
