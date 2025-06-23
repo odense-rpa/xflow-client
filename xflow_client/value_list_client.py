@@ -24,3 +24,18 @@ class ValueListClient:
             if e.response.status_code == 404:
                 return None
             raise
+
+    def get_value_items_from_value_list(self, value_list_id: str):
+        """Get value items from a specific value list.
+        
+        :param value_list_id: The ID of the value list to retrieve items from. Can be found in the response of search_value_lists.
+        :return: A list of value items in the specified value list.
+        """
+        try:
+            response = self.client.get(f"/ValueList/{value_list_id}/Values")
+            return response.json()
+
+        except HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return None
+            raise
