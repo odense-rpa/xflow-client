@@ -24,13 +24,12 @@ def test_update_value_list(value_list_client):
     new_item = {
         "key": "5",
         "value": "test_værdi",
-        "vaerdilisteId": 129,
         "oprettetAf": "System"
     }
 
     updated_value_list_data = value_list_data + [new_item]
 
-    updated_payload = {"valueListData": updated_value_list_data}
+    updated_payload = updated_value_list_data
     value_list_client.update_value_list("37493516-8612-44e9-9767-9250351eb658", updated_payload)
 
     refreshed = value_list_client.get_value_items_from_value_list("37493516-8612-44e9-9767-9250351eb658")
@@ -40,6 +39,6 @@ def test_update_value_list(value_list_client):
 
     # Oprydning: fjern testitem igen
     cleaned_list = [item for item in refreshed_items if item["key"] != "5"]
-    cleanup_payload = {"valueListData": cleaned_list}
+    cleanup_payload = cleaned_list
     value_list_client.update_value_list("37493516-8612-44e9-9767-9250351eb658", cleanup_payload)
     
