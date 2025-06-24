@@ -32,9 +32,17 @@ class XFlowClient:
         logging.getLogger("httpx").setLevel(logging.WARNING)
         logging.getLogger("httpcore").setLevel(logging.WARNING)
         
+        timeout = httpx.Timeout(
+            connect=10.0,  # Time to connect to the server
+            read=20.0,     # Time to read the response
+            write=10.0,    # Time to send the request
+            pool=5.0       # Time to wait for an available connection from the pool
+        )
+
         self.client = httpx.Client(
             base_url=self.base_url, 
-            headers=self.headers
+            headers=self.headers,
+            timeout=timeout,
         )
 
     def _normalize_url(self, endpoint: str) -> str:

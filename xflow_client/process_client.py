@@ -47,7 +47,7 @@ class ProcessClient:
         :return: A list of processes matching the query.
         """
         try:
-            response = self.client.post("/Process/Search", json=query)
+            response = self.client.post("/Process/Search", json = query)
             return response.json()
 
         except HTTPStatusError as e:
@@ -55,15 +55,27 @@ class ProcessClient:
                 return []
             raise
 
-    def search_processes_by_current_activity(self, activity_id: int):
+    def search_processes_by_current_activity(self, query: dict, activity_name: str):
         """Search for processes by the current activity ID.
         
         :param activity_id: The ID of the current activity to search for.
         :return: A list of processes that are currently at the specified activity.
         """
+
+        filtered_processes = []
+
         try:
-            pass
-            # TODO: Implement the actual endpoint for searching by current activity
+            processes = self.search_processes(query)
+
+            for process in processes:
+                detailed_process = self.get_process(process.get("publicId"))                
+                
+                for activity in detailed_process.get("activities", []):
+                    if activity.get("activityName") == activity_name and activity.get("current"):
+                        filtered_processes.append(detailed_process)
+                        break
+            
+            return filtered_processes
 
         except HTTPStatusError as e:
             if e.response.status_code == 404:
