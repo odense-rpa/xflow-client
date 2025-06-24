@@ -41,6 +41,13 @@ class ValueListClient:
             raise
 
     def update_value_list(self, value_list_id: str, value_list_data: dict):
+        """Update a value list with new data.
+        :param value_list_id: The ID of the value list to update.
+        :param value_list_data: A dictionary containing the updated value list data. The dict needs four keys:
+            - 'key': The key of the value item.
+            - 'value': The value of the value item.
+            - 'vaerdilisteId': The ID of the value list.
+            - 'oprettetAf': The user or system that created the value item. Typically 'System'"""
         try:
             response = self.client.put(
                 f"/ValueList/{value_list_id}/Values",
