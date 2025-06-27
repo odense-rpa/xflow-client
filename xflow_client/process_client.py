@@ -9,6 +9,13 @@ class ProcessClient:
         """
         self.client = client
 
+    def find_process_element_value(self, process, identifier_name, value_key):
+        for blanket_entry in process.get("blanketter", []):
+            for element in blanket_entry.get("elementer", []):
+                if element.get("identifier") == identifier_name:
+                    return element.get("values", {}).get(value_key)
+        return None
+
     def start_process(self, data: dict):
         """Start a new process of a given type with the provided data.
 
@@ -105,6 +112,22 @@ class ProcessClient:
         """
         try:
             response = self.client.post(f"/Process/{process_id}/Reject", json={"rejectedToActivityId": activity_id, "note": note})
+            return response
+
+        except HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return None
+            raise
+
+    def update_process(self, process_id: str, data: dict):
+        """Update an existing process with new data.
+        
+        :param process_id: The ID of the process to update.
+        :param data: The new data to update the process with.
+        :return: The updated process data as a JSON object or None if not found.
+        """
+        try:
+            response = self.client.post(f"/Process/{process_id}/Update", json = data)
             return response
 
         except HTTPStatusError as e:
