@@ -41,10 +41,16 @@ class ValueListClient:
             raise
 
     def update_value_list(self, value_list_id: str, value_list_data: dict):
+        """Update a value list with new data.
+        :param value_list_id: The ID of the value list to update.
+        :param value_list_data: A dictionary containing the updated value list data. The dict needs three keys:
+            - 'key': The key of the value item.
+            - 'value': The value of the value item.
+            - 'oprettetAf': The user or system that created the value item. Typically 'System'"""
         try:
             response = self.client.put(
                 f"/ValueList/{value_list_id}/Values",
-                json=value_list_data)
+                json={"ValueListData": value_list_data})
             # Hvis svar ikke indeholder JSON, returner fx status code eller True
             if response.status_code == 204 or not response.content:
                 return None  # eller True / response.status_code
