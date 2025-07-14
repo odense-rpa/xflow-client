@@ -104,20 +104,18 @@ class ProcessClient:
                 return None
             raise
 
-    def reject_process(self, process_id: str, activity_id: int, note = None):
+    def reject_process(self, process_id: str, activity_id: int, note = None) -> None: 
         """Reject a process.
+        Currently always returns a HTTP 500 error, when the process successfully is rejected, so we return None.
         
         :param process_id: The ID of the process to reject.
-        :return: The updated process data as a JSON object or None if not found.
+        :return: The updated process data as a JSON object or None if not found.        
         """
-        try:
-            response = self.client.post(f"/Process/{process_id}/Reject", json={"rejectedToActivityId": activity_id, "note": note})
-            return response
-
-        except HTTPStatusError as e:
-            if e.response.status_code == 404:
-                return None
-            raise
+        
+        response = self.client.post(f"/Process/{process_id}/Reject", json={"rejectedToActivityId": activity_id, "note": note})
+        if response.status_code == 500:
+            return None
+        response.raise_for_status()        
 
     def update_process(self, process_id: str, data: dict):
         """Update an existing process with new data.
