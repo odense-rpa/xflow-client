@@ -148,3 +148,26 @@ class ProcessClient:
             if e.response.status_code == 404:
                 return None
             raise
+
+    def create_process_pdf(self, process_id: str) -> bytes|None:
+        """Create a PDF for a specific process using a given template.
+        
+        :param process_id: The ID of the process to create a PDF for.        
+        :return: The created PDF document data as bytes or None if not found.
+        """
+        try:
+            response = self.client.get(
+                f"/Process/{process_id}/pdf",
+                headers={"Accept": "application/pdf"}
+            )
+            if response.status_code == 404:
+                return None
+            pdf_bytes = response.content
+            # Write PDF to file in project root
+            with open("test.pdf", "wb") as f:
+                f.write(pdf_bytes)
+            return pdf_bytes
+
+        except HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return None

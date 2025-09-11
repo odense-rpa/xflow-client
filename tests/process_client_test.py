@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from .fixtures import base_client, process_client
 from xflow_client import ProcessClient
 
@@ -16,19 +17,19 @@ def test_start_process(process_client):
 
 
 def test_get_process(process_client):
-    process = process_client.get_process("d8f629e8-1a4e-42b9-a34e-af740a2f33ba")
+    process = process_client.get_process("2075be98-b027-4173-92e6-9205c5433ff4")
     assert process is not None
 
 
 def test_search_processes(process_client):    
     query = {
-        "text": "RPA",
+        "text": "",
         "processTemplateIds": [
-            "401"
+            "372"
         ],
         "startIndex": 0,        
         "createdDateFrom": "01-01-1980",
-        "createdDateTo": "01-07-2025",
+        "createdDateTo": "03-09-2025",
     }
     processes = process_client.search_processes(query)
     assert len(processes) > 0
@@ -124,3 +125,28 @@ def test_find_process_element_value(process_client):
     value = process_client.find_process_element_value(processes[0], "FraMedarbejder", "Tekst")
     assert value is not None
     
+def test_create_pdf(process_client):
+    # REDO med test data
+    #xlow_søge_query = {
+    #    "text": "ANSØGNING OM KROPSBÅRNE HJÆLPEMIDLER",
+    #    "processTemplateIds": [
+    #        "726"
+    #    ],
+    #    "startIndex": 0,        
+    #    "createdDateFrom": (datetime.today() - timedelta(days=1)).strftime('%d-%m-%Y'),
+    #    "createdDateTo":  datetime.today().strftime('%d-%m-%Y'),
+    #}
+
+    xlow_søge_query = {}
+
+    igangværende_processer = process_client.search_processes_by_current_activity(
+        query=xlow_søge_query,
+        activity_name="Slut"
+    )
+    
+    process_id = igangværende_processer[0].get("publicId")
+    assert process_id is not None
+    
+    pdf_content = process_client.create_process_pdf(process_id)
+    assert pdf_content is not None
+    assert len(pdf_content) > 0 
