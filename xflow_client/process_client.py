@@ -162,10 +162,9 @@ class ProcessClient:
             )
             if response.status_code == 404:
                 return None
+            
             pdf_bytes = response.content
-            # Write PDF to file in project root
-            with open("test.pdf", "wb") as f:
-                f.write(pdf_bytes)
+
             return pdf_bytes
 
         except HTTPStatusError as e:

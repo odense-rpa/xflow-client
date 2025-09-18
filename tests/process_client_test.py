@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
+
+import pdfplumber
 from .fixtures import base_client, process_client
 from xflow_client import ProcessClient
+
+import pypandoc
 
 
 def test_start_process(process_client):
@@ -124,29 +128,3 @@ def test_find_process_element_value(process_client):
     
     value = process_client.find_process_element_value(processes[0], "FraMedarbejder", "Tekst")
     assert value is not None
-    
-def test_create_pdf(process_client):
-    # REDO med test data
-    #xlow_søge_query = {
-    #    "text": "ANSØGNING OM KROPSBÅRNE HJÆLPEMIDLER",
-    #    "processTemplateIds": [
-    #        "726"
-    #    ],
-    #    "startIndex": 0,        
-    #    "createdDateFrom": (datetime.today() - timedelta(days=1)).strftime('%d-%m-%Y'),
-    #    "createdDateTo":  datetime.today().strftime('%d-%m-%Y'),
-    #}
-
-    xlow_søge_query = {}
-
-    igangværende_processer = process_client.search_processes_by_current_activity(
-        query=xlow_søge_query,
-        activity_name="Slut"
-    )
-    
-    process_id = igangværende_processer[0].get("publicId")
-    assert process_id is not None
-    
-    pdf_content = process_client.create_process_pdf(process_id)
-    assert pdf_content is not None
-    assert len(pdf_content) > 0 

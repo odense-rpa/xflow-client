@@ -2,7 +2,7 @@ import pytest
 import os
 
 from dotenv import load_dotenv
-from xflow_client import XFlowClient, ProcessClient, ProcessTemplateClient, UserClient, ValueListClient
+from xflow_client import XFlowClient, ProcessClient, ProcessTemplateClient, UserClient, ValueListClient, DocumentClient
 
 load_dotenv(dotenv_path="env.local")
 
@@ -34,3 +34,7 @@ def user_client(base_client): # noqa
 @pytest.fixture
 def value_list_client(base_client): # noqa
     return ValueListClient(base_client)
+
+@pytest.fixture
+def document_client(base_client): # noqa
+    return DocumentClient(base_client)
