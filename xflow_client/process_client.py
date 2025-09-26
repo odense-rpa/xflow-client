@@ -96,7 +96,9 @@ class ProcessClient:
         :return: The updated process data as a JSON object or None if not found.
         """
         try:
-            response = self.client.post(f"/Process/{process_id}/Advance", json={})
+            response = self.client.post(f"/Process/{process_id}/Advance", json={
+                
+            })
             return response
 
         except HTTPStatusError as e:

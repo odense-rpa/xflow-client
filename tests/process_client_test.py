@@ -1,11 +1,6 @@
 from datetime import datetime, timedelta
-
-import pdfplumber
 from .fixtures import base_client, process_client
 from xflow_client import ProcessClient
-
-import pypandoc
-
 
 def test_start_process(process_client):
     data = {
@@ -45,53 +40,35 @@ def test_search_processes_by_current_activity(process_client):
     query = {
         "text": "RPA",
         "processTemplateIds": [
-            "401"
+            "743"
         ],
         "startIndex": 0,        
         "createdDateFrom": "01-01-1980",
-        "createdDateTo": "01-07-2025",
+        "createdDateTo": datetime.today().strftime('%d-%m-%Y'),
     }
 
     processes = process_client.search_processes_by_current_activity(query, activity_name)
     assert len(processes) > 0
 
 def test_update_process(process_client):
-    query = {
-        "text": "OPGAVEFLYTNING MELLEM MEDARBEJDERE I NEXUS",
-        "processTemplateIds": [
-            "714"
-        ],
-        "startIndex": 0,        
-        "createdDateFrom": "01-01-1980",
-        "createdDateTo": "01-07-2025",
-    }
-
-    processes = process_client.search_processes_by_current_activity(query, activity_name = "RPAIntegration")
-    process_id = processes[0].get("publicId")    
-    
-    assert process_id is not None
+    detailed_process = process_client.get_process("14ff39a4-6d89-4a13-b37f-49dff400e8f0")
     
     data = {
         "formValues": [
             {
-                "elementIdentifier": "FraMedarbejder",
-                "valueIdentifier": "Tekst",
-                "value": "Mojn"      
-            },
-            {
-                "elementIdentifier": "TilMedarbejder",
-                "valueIdentifier": "Tekst",
-                "value": "Hej"      
+                "elementIdentifier": "ProcesVidereYesNo",
+                "valueIdentifier": "YesSelected",
+                "value": "False"      
             }
         ]        
     }
 
-    response = process_client.update_process(process_id, data)
+    response = process_client.update_process(detailed_process["publicId"], data)
     assert response is not None
     assert response.status_code == 200
 
-def test_advance_process(process_client):
-    response = process_client.advance_process("6c35c34f-c1dd-41a7-a502-ab8eed233bed")
+def test_advance_process(process_client):    
+    response = process_client.advance_process("14ff39a4-6d89-4a13-b37f-49dff400e8f0")
     assert response is not None
     assert response.status_code == 200
 

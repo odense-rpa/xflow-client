@@ -83,3 +83,50 @@ class XFlowClient:
             self.logger.error(f"Error {response.status_code}: {response.text}")
         response.raise_for_status()
         
+    def is_non_empty(self, val):
+        if val is None:
+            return False
+        if isinstance(val, (dict, list)) and not val:
+            return False
+        if isinstance(val, str) and not val.strip():
+            return False
+        return True
+
+    def extract_referable_elements_with_values(self, element):
+        children = []
+        for child in element.get("children", []):
+            child_result = self.extract_referable_elements_with_values(child)
+            if child_result is not None:
+                children.append(child_result)
+        if self.is_non_empty(element.get("values")):
+            result = {
+                "identifier": element.get("identifier"),
+                "values": element.get("values")
+            }
+            if children:
+                result["children"] = children
+            return result
+        if children:
+            if len(children) == 1:
+                return children[0]
+            return children
+        return None
+
+    def traverse_json_for_referable_elements(self, obj):
+        results = []
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key == "elementer" and isinstance(value, list):
+                    for element in value:
+                        res = self.extract_referable_elements_with_values(element)
+                        if res is not None:
+                            if isinstance(res, list):
+                                results.extend(res)
+                            else:
+                                results.append(res)
+                else:
+                    results.extend(self.traverse_json_for_referable_elements(value))
+        elif isinstance(obj, list):
+            for item in obj:
+                results.extend(self.traverse_json_for_referable_elements(item))
+        return results
