@@ -89,16 +89,22 @@ class ProcessClient:
                 return []
             raise    
 
-    def advance_process(self, process_id: str):
+    def advance_process(self, process_id: str, rights_group_id: int = None, user_id: int = None):
         """Advance a process to the next step.
         
-        :param process_id: The ID of the process to advance.        
-        :return: The updated process data as a JSON object or None if not found.
+        :param process_id: The ID of the process to advance.
+        :param rights_group_id: Optional ID of the rights group to advance to.
+        :param user_id: Optional ID of the user to advance to.
+        :return: The response or None if not found.
         """
+        body = {}
+        if rights_group_id is not None:
+            body["rightsGroupId"] = rights_group_id
+        if user_id is not None:
+            body["userId"] = user_id
+
         try:
-            response = self.client.post(f"/Process/{process_id}/Advance", json={
-                
-            })
+            response = self.client.post(f"/Process/{process_id}/Advance", json=body)
             return response
 
         except HTTPStatusError as e:
